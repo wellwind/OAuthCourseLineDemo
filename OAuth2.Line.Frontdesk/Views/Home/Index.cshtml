@@ -3,6 +3,18 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @if(ViewBag.Payload is null)
+    {
+        <h1 class="display-4">Welcome</h1>
+        <p>
+            <a class="btn btn-success" asp-action="LineLogin">Line Login</a>
+        </p>
+    }
+    else
+    {
+        <h1 class="display-4">Hi, @ViewBag.Payload.Name</h1>
+        <p>@ViewBag.Payload.Sub</p>
+        <p><img src="@ViewBag.Payload.Picture" width="128" height="128" /></p>
+        <a class="btn btn-success" asp-action="LineLogin">Bind Line Notify</a>
+    }
 </div>
