@@ -1,4 +1,4 @@
-namespace OAuth2.Line.Core;
+namespace OAuth2.Line.Core.LineLogin;
 
 public class LineLoginConfig
 {

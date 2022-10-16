@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace OAuth2.Line.Core;
+namespace OAuth2.Line.Core.LineLogin;
 
 public class LineLoginAccessToken
 {

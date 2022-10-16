@@ -1,4 +1,4 @@
-using OAuth2.Line.Core;
+using OAuth2.Line.Core.LineLogin;
 
 var builder = WebApplication.CreateBuilder(args);
 

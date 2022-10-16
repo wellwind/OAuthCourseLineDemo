@@ -1,8 +1,8 @@
+namespace OAuth2.Line.Core.LineLogin;
+
 using System.Text.Json.Serialization;
 
-namespace OAuth2.Line.Core;
-
-public class IdToken
+public class LineLoginVerifyIdTokenResult
 {
     [JsonPropertyName("iss")]
     public string Iss { get; set; }
@@ -14,18 +14,26 @@ public class IdToken
     public string Aud { get; set; }
 
     [JsonPropertyName("exp")]
-    public int Exp { get; set; }
+    public int exp { get; set; }
 
     [JsonPropertyName("iat")]
     public int Iat { get; set; }
 
+    [JsonPropertyName("auth_time")]
+    public int AuthTime { get; set; }
+
+    [JsonPropertyName("nonce")]
+    public string Nonce { get; set; }
+
     [JsonPropertyName("amr")]
-    public List<string> Amr { get; set; }
+    public IEnumerable<string> amr { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
     [JsonPropertyName("picture")]
     public string Picture { get; set; }
-}
 
+    [JsonPropertyName("email")]
+    public string Email { get; set; }
+}

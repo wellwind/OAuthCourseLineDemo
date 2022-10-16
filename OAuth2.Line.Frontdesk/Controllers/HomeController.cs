@@ -6,7 +6,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using OAuth2.Line.Core;
+using OAuth2.Line.Core.LineLogin;
 using OAuth2.Line.Frontdesk.Models;
 
 namespace OAuth2.Line.Frontdesk.Controllers;
