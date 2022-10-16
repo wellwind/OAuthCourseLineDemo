@@ -115,6 +115,31 @@ public class HomeController : Controller
             Guid.NewGuid().ToString()));
     }
 
+    public async Task<IActionResult> LineLogoutAsync()
+    {
+        var accessToken = HttpContext.Request.Cookies["AccessToken"];
+        var idToken = HttpContext.Request.Cookies["IdToken"];
+
+        try
+        {
+
+            await _lineLoginService.RevokeAccessTokenAsync(accessToken, _lineLoginConfig.ChannelId, _lineLoginConfig.ChannelSecret);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+
+        HttpContext.Response.Cookies.Delete("AccessToken");
+        HttpContext.Response.Cookies.Delete("ExpiresIn");
+        HttpContext.Response.Cookies.Delete("IdToken");
+        HttpContext.Response.Cookies.Delete("RefreshToken");
+        HttpContext.Response.Cookies.Delete("Scope");
+        HttpContext.Response.Cookies.Delete("TokenType");
+
+        return RedirectToAction("Index");
+    }
+
     public async Task<IActionResult> LineLoginCallback([FromQuery(Name = "code")] string code)
     {
         if (String.IsNullOrWhiteSpace(code))

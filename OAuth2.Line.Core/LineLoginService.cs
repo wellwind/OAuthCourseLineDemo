@@ -71,8 +71,7 @@ public class LineLoginService
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        var responseStream = await response.Content.ReadAsStringAsync();
-        _logger.LogInformation(responseStream);
+        var responseStream = await response.Content.ReadAsStreamAsync();
         return JsonSerializer.Deserialize<LineLoginUserProfile>(responseStream);
     }
 
