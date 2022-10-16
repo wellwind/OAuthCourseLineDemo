@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using OAuth2.Line.Core;
 using OAuth2.Line.Frontdesk.Models;
@@ -31,20 +33,66 @@ public class HomeController : Controller
         _lineLoginService = lineLoginService;
     }
 
-    public IActionResult Index()
+    public DateTime UnixTimeStampToDateTime(double unixTimeStamp)
     {
-        var idToken = HttpContext.Request.Cookies["IdToken"];
-        if (!String.IsNullOrEmpty(idToken))
+        // Unix timestamp is seconds past epoch
+        System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+        dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dtDateTime;
+    }
+
+    public bool TryParseIdToken(string jwtToken, out IdToken idToken)
+    {
+        try
         {
-            var payload = idToken.Split(".")[1];
-            payload = payload.Replace('_', '/').Replace('-', '+');
-            switch (payload.Length % 4)
+            var payloadString = jwtToken.Split(".")[1];
+            var result = JsonSerializer.Deserialize<IdToken>(Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(payloadString)));
+            if (result is not null)
             {
-                case 2: payload += "=="; break;
-                case 3: payload += "="; break;
+                idToken = result;
+                return true;
             }
-            ViewBag.Payload = System.Text.Json.JsonSerializer.Deserialize<IdToken>(Encoding.UTF8.GetString(Convert.FromBase64String(payload)));
+
         }
+        catch { }
+        idToken = null;
+        return false;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var accessToken = HttpContext.Request.Cookies["AccessToken"];
+        var idToken = HttpContext.Request.Cookies["IdToken"];
+
+        if (String.IsNullOrEmpty(accessToken) || String.IsNullOrEmpty(idToken))
+        {
+            return View();
+        }
+
+        LineLoginVerifyAccessTokenResult accessTokenVerifyResult = null;
+        try
+        {
+            accessTokenVerifyResult = await _lineLoginService.VerifyAccessTokenAsync(accessToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return View();
+        }
+
+        LineLoginVerifyIdTokenResult idTokenVerifyResult = null;
+        try
+        {
+            idTokenVerifyResult = await _lineLoginService.VerifyIdTokenAsync(idToken, _lineLoginConfig.ChannelId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return View();
+        }
+
+        var user = await _lineLoginService.GetUserProfileAsync(accessToken);
+        ViewBag.User = user;
         return View();
     }
 
@@ -74,14 +122,22 @@ public class HomeController : Controller
             return BadRequest();
         }
 
-        var accessToken = await _lineLoginService.GetAccessToken(code, _lineLoginConfig.ChannelId, _lineLoginConfig.ChannelSecret, _redirectUri);
-        HttpContext.Response.Cookies.Append("AccessToken", accessToken.AccessToken);
-        HttpContext.Response.Cookies.Append("ExpiresIn", accessToken.ExpiresIn.ToString());
-        HttpContext.Response.Cookies.Append("IdToken", accessToken.IdToken);
-        HttpContext.Response.Cookies.Append("RefreshToken", accessToken.RefreshToken);
-        HttpContext.Response.Cookies.Append("Scope", accessToken.Scope);
-        HttpContext.Response.Cookies.Append("TokenType", accessToken.TokenType);
+        var accessToken = await _lineLoginService.GetAccessTokenAsync(code, _lineLoginConfig.ChannelId, _lineLoginConfig.ChannelSecret, _redirectUri);
 
-        return RedirectToAction("Index");
+        if (TryParseIdToken(accessToken.IdToken, out var idToken))
+        {
+            // TODO: write idToken & accessToken to database
+
+            HttpContext.Response.Cookies.Append("AccessToken", accessToken.AccessToken);
+            HttpContext.Response.Cookies.Append("ExpiresIn", accessToken.ExpiresIn.ToString());
+            HttpContext.Response.Cookies.Append("IdToken", accessToken.IdToken);
+            HttpContext.Response.Cookies.Append("RefreshToken", accessToken.RefreshToken);
+            HttpContext.Response.Cookies.Append("Scope", accessToken.Scope);
+            HttpContext.Response.Cookies.Append("TokenType", accessToken.TokenType);
+
+            return RedirectToAction("Index");
+        }
+
+        return BadRequest();
     }
 }
