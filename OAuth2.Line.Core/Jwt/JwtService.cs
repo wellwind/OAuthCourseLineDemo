@@ -7,6 +7,14 @@ using System.Text;
 
 public class JwtService
 {
+    /// <summary>
+    /// 產生 Jwt Token
+    /// </summary>
+    /// <param name="signKey"></param>
+    /// <param name="issuer"></param>
+    /// <param name="claims"></param>
+    /// <param name="expires"></param>
+    /// <returns></returns>
     public string GenerateToken(string signKey, string issuer, IEnumerable<Claim> claims, DateTime? expires = null)
     {
         var userClaimsIdentity = new ClaimsIdentity(claims);
@@ -35,6 +43,14 @@ public class JwtService
         return tokenHandler.WriteToken(securityToken);
     }
 
+    /// <summary>
+    /// 驗證 Jwt Token
+    /// </summary>
+    /// <param name="token"></param>
+    /// <param name="issuer"></param>
+    /// <param name="signKey"></param>
+    /// <param name="validateErrorException"></param>
+    /// <returns></returns>
     public SecurityToken ValidateToken(string token, string issuer, string signKey, out Exception validateErrorException)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signKey));

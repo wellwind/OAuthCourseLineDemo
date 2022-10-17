@@ -15,11 +15,26 @@ public class LineNotifyService
         _httpClient = httpClientFactory.CreateClient("LineNotifyService");
     }
 
+    /// <summary>
+    /// 產生 Line Notify 連動網址
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="redirectUri"></param>
+    /// <param name="state"></param>
+    /// <returns></returns>
     public string GetAuthorizeUrl(string clientId, string redirectUri, string state)
     {
         return $"https://notify-bot.line.me/oauth/authorize?response_type=code&client_id={clientId}&redirect_uri={redirectUri}&scope=notify&state={state}";
     }
 
+    /// <summary>
+    /// 依照 code 取得 access token
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="clientId"></param>
+    /// <param name="clientSecret"></param>
+    /// <param name="returnUri"></param>
+    /// <returns></returns>
     public async Task<string> GetAccessTokenAsync(string code, string clientId, string clientSecret, string returnUri)
     {
         var endpoint = "https://notify-bot.line.me/oauth/token";
@@ -37,6 +52,11 @@ public class LineNotifyService
         return JsonSerializer.Deserialize<LineNotifyAccessToken>(responseStream).AccessToken;
     }
 
+    /// <summary>
+    /// 撤銷 Line Notify 的 access token
+    /// </summary>
+    /// <param name="accessToken"></param>
+    /// <returns></returns>
     public async Task RevokeAccessTokenAsync(string accessToken)
     {
         var endpoint = "https://notify-api.line.me/api/revoke";
@@ -46,6 +66,12 @@ public class LineNotifyService
         response.EnsureSuccessStatusCode();
     }
 
+    /// <summary>
+    /// 發送 Line Notify 訊息
+    /// </summary>
+    /// <param name="accessToken"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public async Task<bool> SendMessageAsync(string accessToken, string message)
     {
         var endpoint = "https://notify-api.line.me/api/notify";

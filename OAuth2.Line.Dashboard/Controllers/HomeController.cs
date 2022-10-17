@@ -61,29 +61,31 @@ public class HomeController : Controller
             return RedirectToAction("Index");
         }
 
+        // 先建立一筆 message
         var messageId = await _messageService.CreateMessage(message);
 
-
-        var bindings = _lineNotifyBindingService.GetLineNotifyBindings().ToList();
+        // 找出所有已連動 Line Notify 的帳號
+        var bindings = _lineNotifyBindingService.GetLineNotifyBindings()
+            .Where(binding => !String.IsNullOrEmpty(binding.LineNotifyAccessToken))
+            .ToList();
         foreach (var binding in bindings)
         {
+            // 將該帳號的訊息狀態設為 false
             await _messageService.UpdateMessageStatusAsync(binding.Sub, messageId, false, null);
 
-            if (!String.IsNullOrEmpty(binding.LineNotifyAccessToken))
+            try
             {
-                _logger.LogInformation("Message: " + message);
-                try
-                {
-                    await _lineNotifyService.SendMessageAsync(binding.LineNotifyAccessToken, message);
-                    await _messageService.UpdateMessageStatusAsync(binding.Sub, messageId, true, null);
+                // 發送訊息
+                await _lineNotifyService.SendMessageAsync(binding.LineNotifyAccessToken, message);
 
-                    _logger.LogInformation("Update 1");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message);
-                    await _messageService.UpdateMessageStatusAsync(binding.Sub, messageId, false, ex.Message);
-                }
+                // 將該帳號的訊息狀態設為 true
+                await _messageService.UpdateMessageStatusAsync(binding.Sub, messageId, true, null);
+            }
+            catch (Exception ex)
+            {
+                // 如果有錯誤，記錄錯誤訊息
+                _logger.LogError(ex.Message);
+                await _messageService.UpdateMessageStatusAsync(binding.Sub, messageId, false, ex.Message);
             }
         }
 
