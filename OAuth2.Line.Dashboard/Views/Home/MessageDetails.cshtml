@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Message Details";
+}
+@model IEnumerable<OAuth2.Line.Core.Database.MessageStatus>;
+
+<div class="text-center">
+
+    <h1 class="display-4">發送清單</h1>
+
+    <div class="alert alert-info" role="alert">
+        @ViewBag.MessageText
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" width="64"></th>
+                <th scope="col" style="text-align: left">Name</th>
+                <th scope="col" width="128">狀態</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row">
+                        <img src="@item.SubNavigation.Picture" width="64" height="64" />
+                    </td>
+                    <td class="align-middle" style="text-align: left">@item.SubNavigation.Name</td>
+                    <td class="align-middle">
+                        @if(item.Status == 1)
+                        {
+                            <span class="text text-success">發送成功</span>
+                        }
+                        else
+                        {
+                            <span class="text text-danger">發送失敗</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

@@ -3,6 +3,77 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @if (ViewBag.FlashMessage is not null)
+    {
+        <div class="alert alert-@(ViewBag.FlashMessageType)" role="alert">
+            @ViewBag.FlashMessage
+        </div>
+    }
+
+    <h1 class="display-4">廣播訊息</h1>
+
+    <form asp-action="BroadcastMessage" method="post">
+        <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea name="Message" class="form-control" id="message" rows="3" maxlength="128"></textarea>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </form>
+
+    <hr />
+
+    <h1 class="display-4">Send Logs</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" width="96">Id</th>
+                <th scope="col" width="256">Time</th>
+                <th scope="col" style="text-align: left">Message</th>
+                <th scope="col" width="96">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in ViewBag.SendLogs)
+            {
+                <tr>
+                    <th scope="row">@log.Id</th>
+                    <td>@log.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td style="text-align: left">@log.MessageText</td>
+                    <td>
+                        <a asp-action="MessageDetails" asp-route-id="@log.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <hr />
+
+    <h1 class="display-4">Subscribers</h1>
+
+    <hr />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" width="64"></th>
+                <th scope="col" style="text-align: left">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var subscriber in ViewBag.Subscribers)
+            {
+                <tr>
+                    <td scope="row">
+                        <img src="@subscriber.Picture" width="64" height="64" />
+                    </td>
+                    <td class="align-middle" style="text-align: left">@subscriber.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
 </div>

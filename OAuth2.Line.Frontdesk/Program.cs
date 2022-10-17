@@ -1,14 +1,11 @@
-using OAuth2.Line.Core.LineLogin;
+using OAuth2.Line.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.Configure<LineLoginConfig>(builder.Configuration.GetSection("LineLogin"));
-
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<LineLoginService>();
+builder.Services.AddCoreLibs(builder.Configuration);
 
 var app = builder.Build();
 

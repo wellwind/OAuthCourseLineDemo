@@ -1,7 +1,11 @@
+using OAuth2.Line.Core;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddCoreLibs(builder.Configuration);
 
 var app = builder.Build();
 

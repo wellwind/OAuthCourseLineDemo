@@ -3,7 +3,7 @@
 }
 
 <div class="text-center">
-    @if(ViewBag.User is null)
+    @if (ViewBag.User is null)
     {
         <h1 class="display-4">Welcome</h1>
         <p>
@@ -15,13 +15,20 @@
         <h1 class="display-4">Hi, @ViewBag.User.DisplayName</h1>
         <p>@ViewBag.User.Sub</p>
         <p><img src="@ViewBag.User.PictureUrl" width="128" height="128" /></p>
-        @if(!String.IsNullOrEmpty(ViewBag.User.StatusMessage))
+        @if (!String.IsNullOrEmpty(ViewBag.User.StatusMessage))
         {
             <div class="alert alert-primary" role="alert">
                 @ViewBag.User.StatusMessage
             </div>
         }
-        <a class="btn btn-success" asp-action="LineLogin">Bind Line Notify</a>
-        <a class="btn btn-danger" asp-action="LineLogout">Logout</a>
+        @if (ViewBag.IsLineNotifyBinded)
+        {
+            <a class="btn btn-warning" asp-action="RevokeLineNotify">取消 Line Notify 通知</a>
+        }
+        else
+        {
+            <a class="btn btn-success" asp-action="BindLineNotify">訂閱 Line Notify 通知</a>
+        }
+        <a class="btn btn-danger" asp-action="LineLogout">登出</a>
     }
 </div>
