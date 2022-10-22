@@ -11,6 +11,13 @@
         @ViewBag.MessageText
     </div>
 
+    @if (!String.IsNullOrEmpty(ViewBag.StickerId))
+    {
+        <div>
+            <img src="https://stickershop.line-scdn.net/stickershop/v1/sticker/@ViewBag.StickerId/android/sticker.png">
+        </div>
+    }
+
     <table class="table">
         <thead>
             <tr>
@@ -28,7 +35,7 @@
                     </td>
                     <td class="align-middle" style="text-align: left">@item.SubNavigation.Name</td>
                     <td class="align-middle">
-                        @if(item.Status == 1)
+                        @if (item.Status == 1)
                         {
                             <span class="text text-success">發送成功</span>
                         }

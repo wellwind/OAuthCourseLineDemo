@@ -53,8 +53,10 @@ public class HomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> BroadcastMessage(string message)
+    public async Task<IActionResult> BroadcastMessage(string message, string packageId, string stickerId)
     {
+        _logger.LogError(packageId);
+
         if (!ModelState.IsValid)
         {
             TempData["FlashMessage"] = "Message is required.";
@@ -62,7 +64,7 @@ public class HomeController : Controller
         }
 
         // 先建立一筆 message
-        var messageId = await _messageService.CreateMessage(message);
+        var messageId = await _messageService.CreateMessage(message, packageId, stickerId);
 
         // 找出所有已連動 Line Notify 的帳號
         var bindings = _lineNotifyBindingService.GetLineNotifyBindings()
@@ -76,7 +78,7 @@ public class HomeController : Controller
             try
             {
                 // 發送訊息
-                await _lineNotifyService.SendMessageAsync(binding.LineNotifyAccessToken, message);
+                await _lineNotifyService.SendMessageAsync(binding.LineNotifyAccessToken, message, packageId, stickerId);
 
                 // 將該帳號的訊息狀態設為 true
                 await _messageService.UpdateMessageStatusAsync(binding.Sub, messageId, true, null);
@@ -105,6 +107,7 @@ public class HomeController : Controller
         var result = _messageService.GetMessageStatuses(id);
 
         ViewBag.MessageText = message.MessageText;
+        ViewBag.StickerId = message.StickerId;
         return View(result);
     }
 }

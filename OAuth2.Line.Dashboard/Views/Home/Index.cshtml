@@ -17,6 +17,44 @@
             <label for="message" class="form-label">Message</label>
             <textarea name="Message" class="form-control" id="message" rows="3" maxlength="128"></textarea>
         </div>
+        <div>
+            <label for="message" class="form-label">Stickers</label>
+        </div>
+        <div>
+            <img width="100" style="cursor: pointer;"
+                src="https://stickershop.line-scdn.net/stickershop/v1/sticker/11087923/android/sticker.png" data-sticker
+                data-packageId="6362" data-stickerId="11087923" />
+            <img width="100" style="cursor: pointer;"
+                src="https://stickershop.line-scdn.net/stickershop/v1/sticker/1992/android/sticker.png" data-sticker
+                data-packageId="442" data-stickerId="1992" />
+            <img width="100" style="cursor: pointer;"
+                src="https://stickershop.line-scdn.net/stickershop/v1/sticker/10855/android/sticker.png" data-sticker
+                data-packageId="789" data-stickerId="10855" />
+            <img width="100" style="cursor: pointer;"
+                src="https://stickershop.line-scdn.net/stickershop/v1/sticker/11069852/android/sticker.png" data-sticker
+                data-packageId="6359" data-stickerId="11069852" />
+            <img width="100" style="cursor: pointer;"
+                src="https://stickershop.line-scdn.net/stickershop/v1/sticker/52002735/android/sticker.png" data-sticker
+                data-packageId="11537" data-stickerId="52002735" />
+        </div>
+        <hr />
+        <div class="mb-3" style="text-align: left;">
+            <div class="row">
+                <div class="col">
+                    <label for="packageId" class="form-label">Package ID</label>
+                    <input name="packageId" class="form-control" id="packageId" value="6362" />
+                </div>
+                <div class="col">
+                    <label for="stickerId" class="form-label">Sticker ID</label>
+                    <input name="stickerId" class="form-control" id="stickerId" value="11087923" />
+                </div>
+            </div>
+            <div>Package & Sticker Id see:
+                <a href="https://developers.line.biz/en/docs/messaging-api/sticker-list/">
+                    https://developers.line.biz/en/docs/messaging-api/sticker-list/
+                </a>
+            </div>
+        </div>
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">Send</button>
         </div>
@@ -77,3 +115,15 @@
     </table>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-sticker]').forEach((el) => {
+            el.addEventListener('click', () => {
+                document.getElementById('packageId').value = el.getAttribute('data-packageId');
+                document.getElementById('stickerId').value = el.getAttribute('data-stickerId');
+            });
+        });
+    })
+
+</script>

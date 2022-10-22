@@ -12,11 +12,13 @@ public class MessageService
         _context = context;
     }
 
-    public async Task<int> CreateMessage(string message)
+    public async Task<int> CreateMessage(string message, string stickerPackageId, string stickerId)
     {
         var messageEntity = new Database.Message()
         {
             MessageText = message,
+            StickerPackageId = stickerPackageId,
+            StickerId = stickerId,
             CreatedAt = DateTime.Now,
         };
         _context.Messages.Add(messageEntity);

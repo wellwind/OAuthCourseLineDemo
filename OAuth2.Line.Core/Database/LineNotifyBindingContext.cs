@@ -86,6 +86,14 @@ namespace OAuth2.Line.Core.Database
                 entity.Property(e => e.MessageText)
                     .HasColumnType("text")
                     .HasColumnName("message_text");
+
+                entity.Property(e => e.StickerPackageId)
+                    .HasColumnType("text")
+                    .HasColumnName("sticker_package_id");
+
+                entity.Property(e => e.StickerId)
+                    .HasColumnType("text")
+                    .HasColumnName("sticker_id");
             });
 
             modelBuilder.Entity<MessageStatus>(entity =>

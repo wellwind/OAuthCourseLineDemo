@@ -72,14 +72,16 @@ public class LineNotifyService
     /// <param name="accessToken"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public async Task<bool> SendMessageAsync(string accessToken, string message)
+    public async Task<bool> SendMessageAsync(string accessToken, string message, string stickerPackageId, string stickerId)
     {
         var endpoint = "https://notify-api.line.me/api/notify";
         var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
         request.Headers.Add("Authorization", $"Bearer {accessToken}");
         request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                { "message", message }
+                { "message", message },
+                { "stickerPackageId", stickerPackageId },
+                { "stickerId", stickerId }
             });
 
         var response = await _httpClient.SendAsync(request);

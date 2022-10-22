@@ -12,6 +12,8 @@ namespace OAuth2.Line.Core.Database
 
         public int Id { get; set; }
         public string MessageText { get; set; } = null!;
+        public string StickerPackageId { get; set; } = null!;
+        public string StickerId { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
 
         public virtual ICollection<MessageStatus> MessageStatuses { get; set; }
